@@ -3,62 +3,86 @@ import json
 
 
 def load_data(file_path):
-    """Loads a JSON file."""
-    with open(file_path, "r") as handle:
+    """Load animal data from a JSON file."""
+    with open(file_path, "r", encoding="utf-8") as handle:
         return json.load(handle)
 
 
+def serialize_animal(animal_obj):
+    """Convert a single animal into an HTML card."""
+    output = ""
+
+    # Start the HTML card
+    output += '<li class="cards__item">\n'
+
+    # Add the animal's name
+    if "name" in animal_obj:
+        output += (
+            f'  <div class="card__title">'
+            f'{animal_obj["name"]}</div>\n'
+        )
+
+    # Start the card's text section
+    output += '  <p class="card__text">\n'
+
+    # Add diet and type if available
+    if "characteristics" in animal_obj:
+        characteristics = animal_obj["characteristics"]
+
+        if "diet" in characteristics:
+            output += (
+                f'    <strong>Diet:</strong> '
+                f'{characteristics["diet"]}<br/>\n'
+            )
+
+    # Add the first location if available
+    if "locations" in animal_obj:
+        locations = animal_obj["locations"]
+
+        if locations:
+            output += (
+                f'    <strong>Location:</strong> '
+                f'{locations[0]}<br/>\n'
+            )
+
+    if "characteristics" in animal_obj:
+        characteristics = animal_obj["characteristics"]
+
+        if "type" in characteristics:
+            output += (
+                f'    <strong>Type:</strong> '
+                f'{characteristics["type"]}<br/>\n'
+            )
+
+    # Close the HTML card
+    output += "  </p>\n"
+    output += "</li>\n"
+
+    return output
+
+
 def main():
-    # 1. Tierdaten aus der JSON-Datei laden
+    """Generate an HTML page containing all animals."""
+
+    # Load animal data
     animals_data = load_data("animals_data.json")
 
-    # 2. HTML-Vorlage einlesen
+    # Read the HTML template
     with open("animals_template.html", "r", encoding="utf-8") as file:
         html_template = file.read()
 
-    # 3. HTML-Karten für alle Tiere erstellen
+    # Generate HTML for all animals
     output = ""
 
-    for animal in animals_data:
+    for animal_obj in animals_data:
+        output += serialize_animal(animal_obj)
 
-        # Eine neue Karte beginnen
-        output += '<li class="cards__item">\n'
-
-        # Tiername als Titel
-        if "name" in animal:
-            output += f'  <div class="card__title">{animal["name"]}</div>\n'
-
-        # Textbereich der Karte öffnen
-        output += '  <p class="card__text">\n'
-
-        if "characteristics" in animal:
-            characteristics = animal["characteristics"]
-
-            if "diet" in characteristics:
-                output += f'    <strong>Diet:</strong> {characteristics["diet"]}<br/>\n'
-
-        if "locations" in animal:
-            locations = animal["locations"]
-
-            if locations:
-                output += f'    <strong>Location:</strong> {locations[0]}<br/>\n'
-
-        if "characteristics" in animal:
-            characteristics = animal["characteristics"]
-
-            if "type" in characteristics:
-                output += f'    <strong>Type:</strong> {characteristics["type"]}<br/>\n'
-
-        # Textbereich und Karte schließen
-        output += "  </p>\n"
-        output += "</li>\n"
-
-    # 4. Platzhalter in der HTML-Vorlage ersetzen
+    # Insert animal cards into the template
     new_html = html_template.replace(
         "__REPLACE_ANIMALS_INFO__", output
     )
 
-    # 5. Fertige HTML-Datei speichern
+    # Save the generated HTML page
     with open("animals.html", "w", encoding="utf-8") as file:
         file.write(new_html)
 
