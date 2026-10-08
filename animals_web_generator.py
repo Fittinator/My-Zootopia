@@ -9,47 +9,51 @@ def load_data(file_path):
 
 
 def main():
-    # 1. Tierdaten aus der JSON-Datei laden
+    # 1. Tierdaten laden
     animals_data = load_data("animals_data.json")
 
     # 2. HTML-Vorlage einlesen
     with open("animals_template.html", "r", encoding="utf-8") as file:
         html_template = file.read()
 
-    # 3. Einen String mit allen Tierinformationen erstellen
+    # 3. HTML-Code für alle Tiere erstellen
     output = ""
 
     for animal in animals_data:
 
+        # Eine neue Tierkarte beginnen
+        output += '<li class="cards__item">\n'
+
         if "name" in animal:
-            output += f"Name: {animal['name']}\n"
+            output += f"Name: {animal['name']}<br/>\n"
 
         if "characteristics" in animal:
             characteristics = animal["characteristics"]
 
             if "diet" in characteristics:
-                output += f"Diet: {characteristics['diet']}\n"
+                output += f"Diet: {characteristics['diet']}<br/>\n"
 
         if "locations" in animal:
             locations = animal["locations"]
 
             if locations:
-                output += f"Location: {locations[0]}\n"
+                output += f"Location: {locations[0]}<br/>\n"
 
         if "characteristics" in animal:
             characteristics = animal["characteristics"]
 
             if "type" in characteristics:
-                output += f"Type: {characteristics['type']}\n"
+                output += f"Type: {characteristics['type']}<br/>\n"
 
-        output += "\n"
+        # Tierkarte schließen
+        output += "</li>\n"
 
-    # 4. Platzhalter durch unsere Tierinformationen ersetzen
+    # 4. Platzhalter durch die Tierkarten ersetzen
     new_html = html_template.replace(
         "__REPLACE_ANIMALS_INFO__", output
     )
 
-    # 5. Neue HTML-Datei erstellen
+    # 5. Fertige HTML-Datei speichern
     with open("animals.html", "w", encoding="utf-8") as file:
         file.write(new_html)
 
